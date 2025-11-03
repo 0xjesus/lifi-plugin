@@ -6,23 +6,23 @@ import { contract } from "./contract";
 import { DataProviderService } from "./service";
 
 /**
- * Data Provider Plugin Template - Template for building single-provider bridge data adapters.
+ * Li.Fi Bridge Data Provider Plugin
  *
- * This template demonstrates how to implement the data provider contract for one provider.
- * Choose ONE provider (LayerZero, Wormhole, CCTP, Across, deBridge, Axelar, Li.Fi) and
- * replace the mock implementation with actual API calls.
- * 
+ * Collects and normalizes cross-chain bridge metrics from Li.Fi aggregator.
+ * Li.Fi aggregates multiple bridges (Hop, Connext, Across, etc.) and DEXes.
  */
 export default createPlugin({
   id: "@every-plugin/template",
 
   variables: z.object({
-    baseUrl: z.string().url().default("https://api.example.com"),
-    timeout: z.number().min(1000).max(60000).default(10000),
+    baseUrl: z.string().url().default("https://li.quest/v1"),
+    defillamaBaseUrl: z.string().url().default("https://bridges.llama.fi"),
+    timeout: z.number().min(1000).max(60000).default(15000),
+    maxRequestsPerSecond: z.number().min(1).max(100).default(10),
   }),
 
   secrets: z.object({
-    apiKey: z.string().min(1, "API key is required"),
+    apiKey: z.string().default("not-required"),
   }),
 
   contract,
@@ -32,8 +32,10 @@ export default createPlugin({
       // Create service instance with config
       const service = new DataProviderService(
         config.variables.baseUrl,
+        config.variables.defillamaBaseUrl,
         config.secrets.apiKey,
-        config.variables.timeout
+        config.variables.timeout,
+        config.variables.maxRequestsPerSecond
       );
 
       // Test the connection during initialization

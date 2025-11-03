@@ -21,8 +21,10 @@ const mockRoute = {
 describe("DataProviderService", () => {
   const service = new DataProviderService(
     "https://api.example.com",
+    "https://bridges.llama.fi",
     "test-api-key",
-    5000
+    5000,
+    10
   );
 
   describe("getSnapshot", () => {
@@ -113,6 +115,21 @@ describe("DataProviderService", () => {
         expect(threshold.maxAmountIn).toBeTypeOf("string");
         expect(threshold.slippageBps).toBeTypeOf("number");
       });
+
+      // CRITICAL: Verify liquidity depth logic
+      // The max amount for 100bps (1% slippage) should be >= max amount for 50bps (0.5% slippage)
+      // because higher slippage tolerance allows for larger trades
+      const threshold50bps = thresholds.find(t => t.slippageBps === 50);
+      const threshold100bps = thresholds.find(t => t.slippageBps === 100);
+
+      expect(threshold50bps).toBeDefined();
+      expect(threshold100bps).toBeDefined();
+
+      const maxAt50bps = BigInt(threshold50bps!.maxAmountIn);
+      const maxAt100bps = BigInt(threshold100bps!.maxAmountIn);
+
+      // 100bps threshold should allow equal or larger amounts than 50bps
+      expect(maxAt100bps >= maxAt50bps).toBe(true);
     });
 
     it("should return list of supported assets", async () => {
@@ -124,7 +141,7 @@ describe("DataProviderService", () => {
         })
       );
 
-      expect(result.listedAssets.assets).toHaveLength(3);
+      expect(result.listedAssets.assets.length).toBeGreaterThan(0);
 
       // Verify asset structure
       result.listedAssets.assets.forEach(asset => {

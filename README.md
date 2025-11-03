@@ -1,14 +1,6 @@
-# Data Provider Playground
+# Li.Fi Data Provider Plugin
 
-Template repository for building single-provider bridge data adapters for the **NEAR Intents data collection bounty**.
-
-## 🚀 Start Here
-
-This repo contains a complete template for implementing one of the seven supported bridge providers:
-
-- LayerZero, Wormhole, CCTP, Across, deBridge, Axelar, or Li.Fi
-
-**Each provider gets its own plugin** - choose one and implement it using the provided template.
+A plugin that collects and normalizes market data from the Li.Fi aggregator API for NEAR Intents.
 
 ## Quick Start
 
@@ -16,101 +8,57 @@ This repo contains a complete template for implementing one of the seven support
 # Install dependencies
 bun install
 
-# Start development server (includes web UI for testing)
+# Start development server with web UI
 bun dev
-
-# Open http://localhost:3001 to see the demo interface
 ```
 
-## How to Implement a Provider
+Open `http://localhost:3001` to test the plugin.
 
-### 1. Copy the Template
+## Testing & Verification
 
+### Run Tests
 ```bash
-cp -r packages/_plugin_template packages/your-provider-plugin
-cd packages/your-provider-plugin
+# Run all unit and integration tests
+bun test
 ```
 
-### 2. Replace Mock Implementation
+### Verify Data Collection
+1. Start the dev server: `bun dev`
+2. Open the web UI at `http://localhost:3001`
+3. Test each endpoint:
+   - **Rates & Fees**: Check real-time quotes with fee breakdowns
+   - **Liquidity Depth**: Verify liquidity estimates for routes
+   - **Available Assets**: Confirm supported chains and tokens load
+   - **Volume Data**: Validate 24h, 7d, and 30d volume metrics
 
-Edit `src/service.ts`:
+Expected behavior: All endpoints should return valid data without errors.
 
-- Replace `getRates()`, `getVolumes()`, `getLiquidityDepth()`, `getListedAssets()` with real API calls
-- Implement decimal normalization for `effectiveRate` calculations
-- Add proper error handling for rate limits and timeouts
+## Data Sources
 
-### 3. Update Plugin Configuration
+| Metric | Source | Endpoint |
+| :--- | :--- | :--- |
+| **Rates & Fees** | Li.Fi API | `GET /quote` |
+| **Liquidity Depth** | Li.Fi API | `GET /quote` (probe) |
+| **Available Assets** | Li.Fi API | `GET /chains` & `GET /tokens` |
+| **Volume** | DefiLlama API | `GET /bridge/lifi` |
 
-Edit `src/index.ts`:
+## Configuration (Optional)
 
-```typescript
-id: "@your-org/your-provider-name"
-```
+Environment variables in `.env` (all optional with defaults):
 
-### 4. Test Your Implementation
+| Variable | Purpose | Default |
+| :--- | :--- | :--- |
+| `LIFI_BASE_URL` | Li.Fi API base URL | `https://li.fi/api` |
+| `LIFI_API_KEY` | API key for higher rate limits | `not-required` |
+| `LIFI_TIMEOUT` | Request timeout (ms) | `15000` |
 
-```bash
-# Run tests (they pass with mock data, validate your real implementation)
-npm test
+## Features
 
-# Use the web UI at http://localhost:3001 to visualize your data
-```
+- **Automatic Retries**: Exponential backoff for transient failures
+- **Rate Limiting**: Token bucket algorithm prevents API throttling
+- **Dual Sources**: Li.Fi API + DefiLlama for complete data coverage
 
-## Project Structure
+## Resources
 
-```bash
-data-provider-playground/
-├── apps/web/                    # Demo UI for testing your plugin
-├── packages/
-│   ├── _plugin_template/        # 👈 START HERE - Copy this to create your plugin
-│   └── api/                     # API runtime that loads your plugin
-└── README.md                    # This file
-```
-
-## Testing Your Plugin
-
-The web UI helps you visualize and test your plugin:
-
-1. **Configure routes** - Set source/destination asset pairs
-2. **Set notional amounts** - USD amounts to quote
-3. **Choose time windows** - 24h, 7d, 30d volumes
-4. **Fetch snapshot** - See volumes, rates, liquidity, and assets
-5. **Run tests** - Validate your implementation
-
-## Environment Variables
-
-```bash
-# Required for your plugin
-DATA_PROVIDER_API_KEY=your_provider_api_key
-
-# Optional
-DATA_PROVIDER_BASE_URL=https://api.yourprovider.com
-DATA_PROVIDER_TIMEOUT=10000
-```
-
-## Contract Specification
-
-Your plugin implements a single `getSnapshot` endpoint that returns:
-
-- **volumes**: Trading volume for specified time windows
-- **rates**: Exchange rates and fees for route/notional combinations
-- **liquidity**: Maximum input amounts at 50bps and 100bps slippage
-- **listedAssets**: Assets supported by the provider
-
-## Available Scripts
-
-- `bun dev`: Start all applications in development mode
-- `bun build`: Build all applications
-- `bun test`: Run tests across all packages
-- `bun check-types`: Check TypeScript types
-
-## Notes
-
-- **One provider per plugin** - Implement only the provider you chose
-- **Template injection** - Use `{{SECRET_NAME}}` for secrets in runtime config
-- **Error resilience** - Implement retries and rate limiting in your service methods
-- **Tests pass first** - Mock implementation validates structure, real implementation must match
-
-## License
-
-Part of the NEAR Intents data collection system.
+- [Li.Fi Website](https://li.fi/)
+- [Li.Fi API Docs](https://apidocs.li.fi/)

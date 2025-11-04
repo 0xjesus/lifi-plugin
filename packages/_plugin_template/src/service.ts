@@ -193,7 +193,10 @@ export class DataProviderService {
         ]);
         return { volumes, rates, liquidity, listedAssets } satisfies ProviderSnapshotType;
       },
-      catch: (error) => { throw error; },
+      catch: (error) => {
+        console.error('[Li.Fi] getSnapshot failed:', error);
+        return new Error(error instanceof Error ? error.message : String(error));
+      },
     });
   }
 

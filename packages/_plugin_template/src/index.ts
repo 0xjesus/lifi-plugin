@@ -51,10 +51,17 @@ export default createPlugin({
 
     return {
       getSnapshot: builder.getSnapshot.handler(async ({ input }) => {
-        const snapshot = await Effect.runPromise(
-          service.getSnapshot(input)
-        );
-        return snapshot;
+        try {
+          const snapshot = await Effect.runPromise(
+            service.getSnapshot(input)
+          );
+          return snapshot;
+        } catch (error) {
+          // Log only the error message to avoid Next.js error formatting crash
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          console.error('[Plugin] getSnapshot error:', errorMsg);
+          throw error instanceof Error ? error : new Error(String(error));
+        }
       }),
 
       ping: builder.ping.handler(async () => {

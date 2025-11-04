@@ -21,8 +21,8 @@ export default function Home() {
 
   // Form state for routes and notionals
   const [routes, setRoutes] = useState([
-    { source: { chainId: "1", assetId: "0xA0b86a33E6442e082877a094f204b01BF645Fe0", symbol: "USDC", decimals: 6 },
-      destination: { chainId: "137", assetId: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa8417", symbol: "USDC", decimals: 6 } }
+    { source: { chainId: "1", assetId: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbol: "USDC", decimals: 6 },
+      destination: { chainId: "137", assetId: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", symbol: "USDC", decimals: 6 } }
   ]);
   const [notionals, setNotionals] = useState(["1000", "10000"]);
   const [includeWindows, setIncludeWindows] = useState(["24h"]);
@@ -62,7 +62,7 @@ export default function Home() {
       <div className="grid gap-6">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Data Provider Template</h1>
+          <h1 className="text-3xl font-bold">Lify Provider Template</h1>
           <p className="text-muted-foreground mt-2">
             Template for building single-provider bridge data adapters
           </p>

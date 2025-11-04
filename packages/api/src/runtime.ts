@@ -1,26 +1,34 @@
-import { createPluginRuntime, type PluginBinding } from "every-plugin";
+import { createLocalPluginRuntime, type InferBindingsFromMap } from "every-plugin/testing";
 
-import type DataProviderTemplatePlugin from "@every-plugin/template";
+import DataProviderTemplatePlugin from "@every-plugin/template";
 
-type AppBindings = {
-  "@every-plugin/template": PluginBinding<typeof DataProviderTemplatePlugin>;
-};
+const pluginMap = {
+  "@every-plugin/template": DataProviderTemplatePlugin,
+} as const;
 
-const runtime = createPluginRuntime<AppBindings>({
-  registry: {
-    "@every-plugin/template": {
-      remoteUrl: "http://localhost:3014/remoteEntry.js",
+type AppBindings = InferBindingsFromMap<typeof pluginMap>;
+
+const runtime = createLocalPluginRuntime<AppBindings>(
+  {
+    registry: {
+      "@every-plugin/template": {
+        remoteUrl: "http://localhost:3014/remoteEntry.js",
+        description: "Local Li.Fi data provider plugin",
+      },
+    },
+    secrets: {
+      DATA_PROVIDER_API_KEY: process.env.DATA_PROVIDER_API_KEY || "not-required",
     },
   },
-  secrets: {
-    DATA_PROVIDER_API_KEY: process.env.DATA_PROVIDER_API_KEY!,
-  },
-});
+  pluginMap
+);
 
 export const { router: dataProviderRouter } = await runtime.usePlugin("@every-plugin/template", {
   variables: {
-    baseUrl: process.env.DATA_PROVIDER_BASE_URL || "https://api.example.com",
-    timeout: Number(process.env.DATA_PROVIDER_TIMEOUT) || 10000,
+    baseUrl: process.env.DATA_PROVIDER_BASE_URL || "https://li.quest/v1",
+    defillamaBaseUrl: process.env.DATA_PROVIDER_DEFILLAMA_BASE_URL || "https://bridges.llama.fi",
+    timeout: Number(process.env.DATA_PROVIDER_TIMEOUT) || 15000,
+    maxRequestsPerSecond: Number(process.env.DATA_PROVIDER_MAX_REQUESTS_PER_SECOND) || 10,
   },
   secrets: { apiKey: "{{DATA_PROVIDER_API_KEY}}" },
 });

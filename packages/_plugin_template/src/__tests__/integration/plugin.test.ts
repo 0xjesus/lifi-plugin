@@ -33,8 +33,8 @@ const TEST_PLUGIN_MAP = {
 
 const TEST_CONFIG = {
   variables: {
-    baseUrl: "https://api.example.com",
-    timeout: 5000,
+    baseUrl: "https://li.quest/v1",
+    timeout: 30000,
   },
   secrets: {
     apiKey: "test-api-key",

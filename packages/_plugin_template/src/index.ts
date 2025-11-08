@@ -16,7 +16,6 @@ export default createPlugin({
 
   variables: z.object({
     baseUrl: z.string().url().default("https://li.quest/v1"),
-    defillamaBaseUrl: z.string().url().default("https://bridges.llama.fi"),
     timeout: z.number().min(1000).max(60000).default(15000),
     maxRequestsPerSecond: z.number().min(1).max(100).default(10),
   }),
@@ -32,7 +31,6 @@ export default createPlugin({
       // Create service instance with config
       const service = new DataProviderService(
         config.variables.baseUrl,
-        config.variables.defillamaBaseUrl,
         config.secrets.apiKey,
         config.variables.timeout,
         config.variables.maxRequestsPerSecond

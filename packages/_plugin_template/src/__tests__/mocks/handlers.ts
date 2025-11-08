@@ -100,13 +100,78 @@ const mockTokens = {
   }
 };
 
-// Mock data for DefiLlama bridge volumes
-const mockDefiLlamaVolume = {
-  id: 'lifi',
-  displayName: 'LI.FI',
-  lastDailyVolume: 1500000,
-  lastWeeklyVolume: 10500000,
-  lastMonthlyVolume: 45000000
+// Mock data for LiFi Analytics transfers
+const mockTransfers = {
+  transfers: [
+    {
+      id: 'transfer-1',
+      sending: {
+        amount: '1000000',
+        amountUSD: '1000.00',
+        token: {
+          address: '0xA0b86a33E6442e082877a094f204b01BF645Fe0',
+          symbol: 'USDC',
+          decimals: 6,
+          chainId: 1,
+          name: 'USD Coin',
+          priceUSD: '1.00'
+        },
+        chainId: 1,
+        txHash: '0xmockhash1'
+      },
+      receiving: {
+        amount: '998000',
+        amountUSD: '998.00',
+        token: {
+          address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa8417',
+          symbol: 'USDC',
+          decimals: 6,
+          chainId: 137,
+          name: 'USD Coin',
+          priceUSD: '1.00'
+        },
+        chainId: 137,
+        txHash: '0xmockhash2'
+      },
+      status: 'DONE',
+      tool: 'hop',
+      timestamp: Date.now() / 1000 - 3600 // 1 hour ago
+    },
+    {
+      id: 'transfer-2',
+      sending: {
+        amount: '500000',
+        amountUSD: '500.00',
+        token: {
+          address: '0xA0b86a33E6442e082877a094f204b01BF645Fe0',
+          symbol: 'USDC',
+          decimals: 6,
+          chainId: 1,
+          name: 'USD Coin',
+          priceUSD: '1.00'
+        },
+        chainId: 1,
+        txHash: '0xmockhash3'
+      },
+      receiving: {
+        amount: '499000',
+        amountUSD: '499.00',
+        token: {
+          address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa8417',
+          symbol: 'USDC',
+          decimals: 6,
+          chainId: 137,
+          name: 'USD Coin',
+          priceUSD: '1.00'
+        },
+        chainId: 137,
+        txHash: '0xmockhash4'
+      },
+      status: 'DONE',
+      tool: 'hop',
+      timestamp: Date.now() / 1000 - 86400 * 3 // 3 days ago
+    }
+  ]
 };
 
 // Create mock quote generator with realistic slippage simulation
@@ -233,24 +298,24 @@ function createMockQuote(params: URLSearchParams) {
 // HTTP Request handlers
 export const handlers = [
   // Li.Fi Chains endpoint
-  http.get('https://api.example.com/chains', () => {
+  http.get('https://li.quest/v1/chains', () => {
     return HttpResponse.json(mockChains);
   }),
 
   // Li.Fi Tokens endpoint
-  http.get('https://api.example.com/tokens', () => {
+  http.get('https://li.quest/v1/tokens', () => {
     return HttpResponse.json(mockTokens);
   }),
 
   // Li.Fi Quote endpoint
-  http.get('https://api.example.com/quote', ({ request }) => {
+  http.get('https://li.quest/v1/quote', ({ request }) => {
     const url = new URL(request.url);
     const quote = createMockQuote(url.searchParams);
     return HttpResponse.json(quote);
   }),
 
-  // DefiLlama Bridge Volume endpoint
-  http.get('https://bridges.llama.fi/bridge/lifi', () => {
-    return HttpResponse.json(mockDefiLlamaVolume);
+  // Li.Fi Analytics Transfers endpoint
+  http.get('https://li.quest/v1/analytics/transfers', () => {
+    return HttpResponse.json(mockTransfers);
   }),
 ];

@@ -20,8 +20,7 @@ const mockRoute = {
 
 describe("DataProviderService", () => {
   const service = new DataProviderService(
-    "https://api.example.com",
-    "https://bridges.llama.fi",
+    "https://li.quest/v1",
     "test-api-key",
     5000,
     10

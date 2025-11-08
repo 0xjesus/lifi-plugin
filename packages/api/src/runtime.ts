@@ -26,7 +26,6 @@ const runtime = createLocalPluginRuntime<AppBindings>(
 export const { router: dataProviderRouter } = await runtime.usePlugin("@every-plugin/template", {
   variables: {
     baseUrl: process.env.DATA_PROVIDER_BASE_URL || "https://li.quest/v1",
-    defillamaBaseUrl: process.env.DATA_PROVIDER_DEFILLAMA_BASE_URL || "https://bridges.llama.fi",
     timeout: Number(process.env.DATA_PROVIDER_TIMEOUT) || 15000,
     maxRequestsPerSecond: Number(process.env.DATA_PROVIDER_MAX_REQUESTS_PER_SECOND) || 10,
   },
